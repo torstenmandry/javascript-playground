@@ -1,0 +1,65 @@
+div#typewriter {
+    position: absolute;
+    width: 600pt;
+    text-align: center;
+}
+
+div#currentChar {
+    position: absolute;
+    left: 0pt;
+    top: 0pt;
+    width: 300pt;
+    height: 300pt;
+
+    font-size: 96pt;
+    text-align: center;
+    vertical-align: middle;
+}
+
+div#statusbar {
+    position: absolute;
+    top: 0pt;
+    right: 0pt;
+    width: 295pt;
+}
+
+div#description {
+    position: absolute;
+    left: 0pt;
+    top: 320pt;
+    width: 300pt;
+
+    text-align: left;
+}
+
+.correct {
+    background-color: #adff2f;
+}
+
+.wrong {
+    background-color: #ff0000;
+}
+
+table.status {
+}
+
+.char {
+    width: 20pt;
+    text-align: center;
+    font-weight: bold;
+}
+
+.rate {
+    width: 50pt;
+    text-align: right;
+}
+
+.count {
+    width: 100pt;
+    text-align: right;
+}
+
+.time {
+    width: 100pt;
+    text-align: right;
+}
