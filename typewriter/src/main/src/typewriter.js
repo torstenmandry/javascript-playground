@@ -16,23 +16,23 @@ $(document).ready(function(window) {
 function TypewriterController() {
     var typewriter = new Typewriter();
 
-    this.init = function() {
-        this.initStatusbar();
+    this._init = function() {
+        this._initStatusbar();
         this.displayNextCharacter();
     }
 
-    this.initStatusbar = function() {
+    this._initStatusbar = function() {
         for( var i=0; i<typewriter.getCharacters().length; i++ ) {
             var char = typewriter.getCharacters().charAt(i);
             var entry = '';
             entry += '<tr id="status_' + char + '">';
             entry += '</tr>';
             $("#statusbar_table").append(entry);
-            this.updateStatus(char);
+            this._updateStatus(char);
         }
     }
 
-    this.updateStatus = function(char) {
+    this._updateStatus = function(char) {
         var charStatus = typewriter.getStatus([char]);
         $("#status_" + char).empty()
         var status = '';
@@ -45,11 +45,11 @@ function TypewriterController() {
 
     this.processKey = function (key) {
         var correctInput = typewriter.verifyInput(key);
-        this.setCssClass(correctInput);
-        this.updateStatus(typewriter.currentChar());
+        this._setCssClass(correctInput);
+        this._updateStatus(typewriter.currentChar());
     };
 
-    this.setCssClass = function(correctInput) {
+    this._setCssClass = function(correctInput) {
         $("#currentChar").removeClass();
         if (correctInput) {
             $("#currentChar").addClass("correct");
@@ -62,7 +62,7 @@ function TypewriterController() {
         $("#currentChar").text(typewriter.nextCharacter());
     }
 
-    this.init();
+    this._init();
 }
 
 function Typewriter() {
@@ -72,7 +72,7 @@ function Typewriter() {
     var startTime = null;
     var stopTime = null;
 
-    function init() {
+    function _init() {
         for( var i=0; i<characters.length; i++ ) {
             results[characters.charAt(i)] = {
                 correct: 0,
@@ -125,48 +125,48 @@ function Typewriter() {
     };
 
     this.nextCharacter = function() {
-        currentChar = randomCharacter.call(this);
-        this.startTimer();
+        currentChar = _randomCharacter.call(this);
+        this._startTimer();
         return currentChar;
     }
 
-    function randomCharacter() {
+    function _randomCharacter() {
         return characters.charAt(Math.floor(Math.random() * characters.length));
     }
 
     this.verifyInput = function(inputKey) {
-        this.stopTimer();
+        this._stopTimer();
         if ( inputKey == currentChar ) {
-            this.trackCorrect(currentChar);
+            this._trackCorrect(currentChar);
             return true;
         } else {
-            this.trackWrong(currentChar);
+            this._trackWrong(currentChar);
             return false;
         }
     }
 
-    this.trackCorrect = function(char) {
-        results[char].correctKeystroke(millis.call(this));
+    this._trackCorrect = function(char) {
+        results[char].correctKeystroke(_millis.call(this));
     }
 
-    this.trackWrong = function(char) {
-        results[char].wrongKeystroke(millis.call(this));
+    this._trackWrong = function(char) {
+        results[char].wrongKeystroke(_millis.call(this));
     }
 
     this.getStatus = function(char) {
         return results[char];
     }
 
-    this.startTimer = function() {
+    this._startTimer = function() {
         startTime = new Date().getTime();
         stopTime = null;
     }
 
-    this.stopTimer = function() {
+    this._stopTimer = function() {
         stopTime = new Date().getTime();
     }
 
-    function millis() {
+    function _millis() {
         return stopTime - startTime;
     }
 
@@ -174,5 +174,5 @@ function Typewriter() {
         return characters;
     }
 
-    init.call(this);
+    _init.call(this);
 }
