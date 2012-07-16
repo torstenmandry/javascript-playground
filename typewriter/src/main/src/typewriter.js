@@ -37,9 +37,9 @@ function TypewriterController() {
         $("#status_" + char).empty()
         var status = '';
         status += '<th class="char">' + char + '</th>';
-        status += '<td class="rate">' + charStatus.hitRate() + '%</td>';
+        status += '<td class="rate">' + charStatus.hitRate().toFixed(2) + '%</td>';
         status += '<td class="count">' + charStatus.overall + ' Tries</td>';
-        status += '<td class="time">' + charStatus.averageTime() + ' ms</td>';
+        status += '<td class="time">' + charStatus.averageTime().toFixed(0) + ' ms</td>';
         $("#status_" + char).append(status);
     }
 
@@ -96,11 +96,11 @@ function Typewriter() {
                     this.overall++;
                     this.overallTime += millis;
 
-                    if ( this.minimumTime == undefined || millis < this.minimumTime ) {
+                    if ( this.minimumTime == null || millis < this.minimumTime ) {
                         this.minimumTime = millis;
                     }
 
-                    if ( this.maximumTime == undefined || millis > this.maximumTime ) {
+                    if ( this.maximumTime == null || millis > this.maximumTime ) {
                         this.maximumTime = millis;
                     }
                 },
