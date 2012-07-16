@@ -5,37 +5,82 @@
  */
 
 $(document).ready(function(window) {
-    window.typewriter = new Typewriter();
+    window.typewriterController = new TypewriterController();
 
     jQuery(document).keydown(function (event) {
-        window.typewriter.verifyInput(event.which);
-        window.typewriter.nextCharacter();
+        window.typewriterController.processKey(String.fromCharCode(event.which));
+        window.typewriterController.displayNextCharacter();
     });
 });
 
-function Typewriter() {
-    this.characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    this.results = {};
-    this.startTime = null;
-    this.stopTime = null;
+function TypewriterController() {
+    var typewriter = new Typewriter();
 
     this.init = function() {
-        this.initResults();
         this.initStatusbar();
-        this.nextCharacter();
+        this.displayNextCharacter();
     }
 
-    this.initResults = function() {
-        for( var i=0; i<this.characters.length; i++ ) {
-            this.results[this.characters.charAt(i)] = {
+    this.initStatusbar = function() {
+        for( var i=0; i<typewriter.getCharacters().length; i++ ) {
+            var char = typewriter.getCharacters().charAt(i);
+            var entry = '';
+            entry += '<tr id="status_' + char + '">';
+            entry += '</tr>';
+            $("#statusbar_table").append(entry);
+            this.updateStatus(char);
+        }
+    }
+
+    this.updateStatus = function(char) {
+        var charStatus = typewriter.getStatus([char]);
+        $("#status_" + char).empty()
+        var status = '';
+        status += '<th class="char">' + char + '</th>';
+        status += '<td class="rate">' + charStatus.hitRate() + '%</td>';
+        status += '<td class="count">' + charStatus.overall + ' Tries</td>';
+        status += '<td class="time">' + charStatus.averageTime() + ' ms</td>';
+        $("#status_" + char).append(status);
+    }
+
+    this.processKey = function (key) {
+        var correctInput = typewriter.verifyInput(key);
+        this.setCssClass(correctInput);
+        this.updateStatus(typewriter.currentChar());
+    };
+
+    this.setCssClass = function(correctInput) {
+        $("#currentChar").removeClass();
+        if (correctInput) {
+            $("#currentChar").addClass("correct");
+        } else {
+            $("#currentChar").addClass("wrong");
+        }
+    }
+
+    this.displayNextCharacter = function() {
+        $("#currentChar").text(typewriter.nextCharacter());
+    }
+
+    this.init();
+}
+
+function Typewriter() {
+    var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var currentChar = null;
+    var results = {};
+    var startTime = null;
+    var stopTime = null;
+
+    function init() {
+        for( var i=0; i<characters.length; i++ ) {
+            results[characters.charAt(i)] = {
                 correct: 0,
                 wrong: 0,
                 overall: 0,
                 minimumTime: undefined,
                 maximumTime: undefined,
                 overallTime: 0,
-
-                getMillis: Typewriter.getMillis,
 
                 correctKeystroke: function(millis) {
                     this.correct++;
@@ -71,93 +116,67 @@ function Typewriter() {
                         return 0;
                     return this.overallTime / this.overall;
                 }
-
             }
         }
     }
 
-    this.initStatusbar = function() {
-        for( var i=0; i<this.characters.length; i++ ) {
-            var char = this.characters.charAt(i);
-            var entry = '';
-            entry += '<tr id="status_' + char + '">';
-            entry += '</tr>';
-            $("#statusbar_table").append(entry);
-            this.updateStatus(char);
-        }
-    }
-
-    this.updateStatus = function(char) {
-        $("#status_" + char).empty()
-        var status = '';
-        status += '<th class="char">' + char + '</th>';
-        status += '<td class="rate">' + this.results[char].hitRate() + '%</td>';
-        status += '<td class="count">' + this.results[char].overall + ' Tries</td>';
-        status += '<td class="time">' + this.results[char].averageTime() + ' ms</td>';
-        $("#status_" + char).append(status);
-    }
+    this.currentChar = function() {
+        return currentChar;
+    };
 
     this.nextCharacter = function() {
-        this.display(this.randomCharacter());
+        currentChar = randomCharacter.call(this);
         this.startTimer();
+        return currentChar;
     }
 
-    this.randomCharacter = function() {
-        return this.characters.charAt(Math.floor(Math.random() * this.characters.length));
+    function randomCharacter() {
+        return characters.charAt(Math.floor(Math.random() * characters.length));
     }
 
     this.verifyInput = function(inputKey) {
         this.stopTimer();
-
-        var inputChar = String.fromCharCode(inputKey);
-        var currentChar = this.currentCharacter();
-
-        if ( inputChar == currentChar ) {
+        if ( inputKey == currentChar ) {
             this.trackCorrect(currentChar);
+            return true;
         } else {
             this.trackWrong(currentChar);
+            return false;
         }
     }
 
     this.trackCorrect = function(char) {
-        var millis = this.stopTime - this.startTime;
-        this.changeCssClass("correct");
-        this.results[char].correctKeystroke(millis);
-        this.updateStatus(char);
+        results[char].correctKeystroke(millis.call(this));
     }
 
     this.trackWrong = function(char) {
-        var millis = this.stopTime - this.startTime;
-        this.changeCssClass("wrong");
-        this.results[char].wrongKeystroke(millis);
-        this.updateStatus(char);
+        results[char].wrongKeystroke(millis.call(this));
     }
 
-    this.changeCssClass = function(cssClass) {
-        $("#currentChar").removeClass();
-        $("#currentChar").addClass(cssClass);
+    this.getStatus = function(char) {
+        return results[char];
     }
 
     this.startTimer = function() {
-        this.startTime = new Date().getTime();
-        this.stopTime = null;
+        startTime = new Date().getTime();
+        stopTime = null;
     }
 
     this.stopTimer = function() {
-        this.stopTime = new Date().getTime();
+        stopTime = new Date().getTime();
     }
 
-    this.display = function(char) {
-        $("#currentChar").text(char);
+    function millis() {
+        return stopTime - startTime;
     }
 
-    this.currentCharacter = function() {
-        return $("#currentChar").text();
+    this.getCharacters = function() {
+        return characters;
     }
 
     this.isInitialized = function() {
-        return this.results.size == this.characters.length();
+        return results.size == characters.length;
     }
 
-    this.init();
+    init.call(this);
 }
