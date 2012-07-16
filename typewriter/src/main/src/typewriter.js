@@ -174,9 +174,5 @@ function Typewriter() {
         return characters;
     }
 
-    this.isInitialized = function() {
-        return results.size == characters.length;
-    }
-
     init.call(this);
 }
