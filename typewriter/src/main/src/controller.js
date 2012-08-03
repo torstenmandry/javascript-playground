@@ -21,7 +21,7 @@
         }
 
         this._updateStatus = function(char) {
-            var charStatus = typewriter.getStatus([char]);
+            var charStatus = typewriter.getStatistic([char]);
             $("#status_" + char).empty()
             var status = '';
             status += '<th class="char">' + char + '</th>';
