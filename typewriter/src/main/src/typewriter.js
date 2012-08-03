@@ -5,11 +5,11 @@
  */
 
 $(document).ready(function(window) {
-    window.typewriterController = new TypewriterController();
+    var typewriterController = new TypewriterController();
 
     jQuery(document).keydown(function (event) {
-        window.typewriterController.processKey(String.fromCharCode(event.which));
-        window.typewriterController.displayNextCharacter();
+        typewriterController.processKey(String.fromCharCode(event.which));
+        typewriterController.displayNextCharacter();
     });
 });
 
